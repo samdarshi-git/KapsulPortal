@@ -1,0 +1,118 @@
+<!-- app\templates\doctor\dashboard.html -->
+{% extends "shared/base.html" %}
+{% block content %}
+
+<h2 class="fw-bold text-center mb-4 text-primary">🩺 Doctor Control Dashboard</h2>
+
+<!-- ===================================================== -->
+<!-- 🧾 Pending Requests -->
+<!-- ===================================================== -->
+<div class="card shadow-lg p-4 mb-5 border-warning border-2">
+  <h4 class="text-warning fw-bold mb-3">⏳ Pending Patient Requests</h4>
+
+  {% if pending and pending|length > 0 %}
+    <div class="table-responsive">
+      <table class="table align-middle table-hover">
+        <thead class="table-light">
+          <tr>
+            <th>#</th><th>Name</th><th>Username</th><th>Requested On</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for link in pending %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td class="fw-bold">{{ link.patient_link.name }}</td>
+            <td class="text-muted">{{ link.patient_link.username }}</td>
+            <td>{{ link.requested_at.strftime('%Y-%m-%d %H:%M') }}</td>
+            <td>
+              <a href="{{ url_for('doctor.approve_link', link_id=link.id) }}" class="btn btn-success btn-sm me-2">✅ Approve</a>
+              <a href="{{ url_for('doctor.reject_link', link_id=link.id) }}" class="btn btn-outline-danger btn-sm">❌ Reject</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="alert alert-light border-start border-3 border-warning text-center m-0">
+      💤 No pending patient requests right now.
+    </div>
+  {% endif %}
+</div>
+
+<!-- ===================================================== -->
+<!-- 👥 Active Patients Summary -->
+<!-- ===================================================== -->
+<div class="card shadow p-4">
+  <h4 class="text-primary fw-bold mb-3">👥 Active Patients Overview</h4>
+
+  {% if summaries and summaries|length > 0 %}
+  <div class="row">
+    {% for s in summaries %}
+    <div class="col-xxl-4 col-lg-6 col-12 mb-4">
+      <div class="card border-0 shadow-sm h-100 rounded-4">
+        <div class="card-body p-4 bg-light rounded-4">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5 class="fw-bold text-dark mb-0">{{ s.patient.name }}</h5>
+            {% if s.device %}
+              <span class="badge bg-secondary">{{ s.device.device_code }}</span>
+            {% else %}
+              <span class="badge bg-danger">No Device</span>
+            {% endif %}
+          </div>
+
+          <div class="progress mb-3" style="height: 10px;">
+            <div class="progress-bar
+                {% if s.adherence < 60 %}bg-danger{% elif s.adherence < 85 %}bg-warning{% else %}bg-success{% endif %}"
+                role="progressbar" style="width: {{ s.adherence }}%">
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between mb-2">
+            <small class="text-muted">Adherence</small>
+            <span class="fw-bold">
+              {{ s.adherence }} %
+            </span>
+          </div>
+
+          <p class="mb-2">
+            <strong class="text-muted">Missed Doses:</strong>
+            <span class="{% if s.missed > 2 %}text-danger{% else %}text-success{% endif %}">
+              {{ s.missed }}
+            </span>
+          </p>
+
+          <!-- 🔔 Important alerts -->
+          {% if s.alerts %}
+            {% for a in s.alerts %}
+              <span class="badge bg-warning text-dark me-1">{{ a }}</span>
+            {% endfor %}
+          {% else %}
+            <span class="badge bg-light text-secondary">No critical alerts</span>
+          {% endif %}
+
+          <hr>
+
+          <div class="d-flex flex-wrap gap-2">
+            <a href="{{ url_for('doctor.view_patient', patient_id=s.patient.id) }}" class="btn btn-outline-primary btn-sm">View</a>
+            {% if s.link.allow_analytics %}
+              <a href="{{ url_for('doctor.view_analytics', patient_id=s.patient.id) }}" class="btn btn-outline-success btn-sm">📊 Analytics</a>
+            {% endif %}
+            {% if s.link.allow_med_update %}
+              <a href="{{ url_for('doctor.manage_meds', patient_id=s.patient.id) }}" class="btn btn-outline-warning btn-sm">💊 Edit Meds</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+    <div class="alert alert-info text-center">
+      👀 No linked patients yet. Once patients connect, you’ll see their summaries here.
+    </div>
+  {% endif %}
+</div>
+
+{% endblock %}

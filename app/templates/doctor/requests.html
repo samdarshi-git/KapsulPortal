@@ -1,0 +1,39 @@
+<!-- app/templates/doctor/requests.html -->
+{% extends "shared/base.html" %}
+{% block content %}
+<h2 class="fw-bold text-center mb-4">👥 Pending Patient Link Requests</h2>
+
+{% if pending_links %}
+<div class="card shadow p-4">
+  <table class="table table-hover align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>#</th>
+        <th>Patient Name</th>
+        <th>Username</th>
+        <th>Requested On</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for l in pending_links %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ l.patient_link.name }}</td>
+        <td>{{ l.patient_link.username }}</td>
+        <td>{{ l.patient_link.created_at.strftime('%Y-%m-%d') if l.patient_link.created_at else '—' }}</td>
+        <td>
+          <a href="{{ url_for('doctor.handle_link_request', link_id=l.id, action='approve') }}" class="btn btn-success btn-sm">Approve</a>
+          <a href="{{ url_for('doctor.handle_link_request', link_id=l.id, action='reject') }}" class="btn btn-danger btn-sm">Reject</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="alert alert-info text-center">
+  No pending requests right now.
+</div>
+{% endif %}
+{% endblock %}

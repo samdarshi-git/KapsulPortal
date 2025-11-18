@@ -1,0 +1,46 @@
+<!-- app/templates/patient/analytics.html -->
+<!-- app/templates/patient/analytics.html -->
+
+{% extends "shared/base.html" %}
+{% block content %}
+<h2 class="fw-bold text-center mb-4">📊 Medicine Analytics</h2>
+
+<p class="text-center text-muted mb-4">
+  <em>Adherence measures how consistently you take your medicines as prescribed.</em>
+</p>
+
+<div class="card shadow-sm p-4 mb-4 bg-light">
+  <h5 class="fw-bold text-primary mb-3">📋 Summary</h5>
+  <div class="row text-center">
+    <div class="col-md-3"><strong>Total Medicines:</strong> {{ total_meds }}</div>
+    <div class="col-md-3"><strong>Total Dosages:</strong> {{ total_doses }}</div>
+    <div class="col-md-3"><strong>Missed Doses:</strong> {{ missed_doses }}</div>
+    <div class="col-md-3"><strong>Adherence Rate:</strong> {{ adherence_rate }}%</div>
+  </div>
+</div>
+
+<div class="card shadow-sm p-4 bg-white">
+  <h5 class="fw-bold text-primary mb-3">🕒 Recent Activity</h5>
+  {% if recent_logs %}
+    <ul class="list-group">
+      {% for log in recent_logs %}
+        <li class="list-group-item">
+          {% if not log.missed %}
+            ✅ Took {{ log.med_name }} at {{ log.taken_time.strftime('%I:%M %p') }}
+          {% elif log.device_id %}
+            ⚠️ Dispensed {{ log.med_name }} at {{ log.taken_time.strftime('%I:%M %p') }} but not eaten
+          {% else %}
+            ❌ Missed {{ log.med_name }} dose at {{ log.taken_time.strftime('%I:%M %p') }}
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="text-muted">No recent activity found.</p>
+  {% endif %}
+</div>
+
+<div class="text-center mt-4">
+  <a href="{{ url_for('patient.dashboard') }}" class="btn btn-outline-primary">⬅ Back to Dashboard</a>
+</div>
+{% endblock %}

@@ -1,0 +1,33 @@
+<!-- app\templates\patient\permissions.html -->
+{% extends "shared/base.html" %}
+{% block content %}
+<h2 class="fw-bold text-center mb-4">👨‍⚕️ Doctor Access Permissions</h2>
+
+{% if links %}
+<form method="POST" class="card shadow p-4">
+  <table class="table table-hover align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>Doctor</th>
+        <th>Alerts</th>
+        <th>Analytics</th>
+        <th>Medicine Updates</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for link in links %}
+      <tr>
+        <td>{{ link.doctor.name }}</td>
+        <td><input type="checkbox" name="alerts_{{ link.id }}" {% if link.allow_alerts %}checked{% endif %}></td>
+        <td><input type="checkbox" name="analytics_{{ link.id }}" {% if link.allow_analytics %}checked{% endif %}></td>
+        <td><input type="checkbox" name="update_{{ link.id }}" {% if link.allow_med_update %}checked{% endif %}></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <button type="submit" class="btn btn-success w-100 mt-3">💾 Save Permissions</button>
+</form>
+{% else %}
+<div class="alert alert-info text-center">⚠️ You have no linked doctors yet.</div>
+{% endif %}
+{% endblock %}

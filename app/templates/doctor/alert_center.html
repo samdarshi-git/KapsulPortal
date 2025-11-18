@@ -1,0 +1,50 @@
+<!-- app/templates/doctor/alert_center.html -->
+{% extends "shared/base.html" %}
+{% block content %}
+
+<h2 class="fw-bold text-center mb-4 text-danger">🚨 Doctor Alert Center</h2>
+
+<div class="text-center mb-4">
+  <a href="{{ url_for('doctor.dashboard') }}" class="btn btn-outline-secondary">⬅ Back to Dashboard</a>
+</div>
+
+{% if combined_alerts %}
+<div class="row g-4">
+  {% for p in combined_alerts %}
+  <div class="col-xl-6 col-12">
+    <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+      <div class="card-header bg-light d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 text-primary">{{ p.patient.name }}</h5>
+        {% if p.device %}
+          <span class="badge bg-secondary">{{ p.device.device_code }}</span>
+        {% else %}
+          <span class="badge bg-danger">No Device</span>
+        {% endif %}
+      </div>
+      <div class="card-body bg-white">
+        {% if p.alerts %}
+          {% for a in p.alerts %}
+          <div class="alert alert-{{ a.color }} d-flex justify-content-between align-items-center">
+            <span>{{ a.msg }}</span>
+            <form method="POST" action="{{ url_for('doctor.send_alert', patient_id=p.patient.id) }}">
+              <input type="hidden" name="title" value="Doctor Alert: {{ a.type|capitalize }}">
+              <input type="hidden" name="message" value="{{ a.msg }}">
+              <button class="btn btn-sm btn-outline-light text-dark border-0">📨 Notify</button>
+            </form>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="alert alert-success text-center m-0">
+            ✅ No active alerts for this patient.
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info text-center">No linked patients or alerts found.</div>
+{% endif %}
+
+{% endblock %}

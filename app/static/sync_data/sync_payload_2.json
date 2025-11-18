@@ -1,0 +1,63 @@
+{
+  "patient": "Samdarshi ",
+  "device_code": "2415",
+  "language": "hi",
+  "timestamp": "2025-11-03T18:29:38.584992",
+  "medicines": [
+    {
+      "name": "dolo650",
+      "composition": "paracetamol",
+      "importance": "Medium",
+      "quantity": 10,
+      "expiry": "2026-01-01",
+      "compartment": 1,
+      "dosages": [
+        {
+          "start": "09:00",
+          "end": "10:00",
+          "food_status": "Before Food",
+          "remark": ""
+        }
+      ]
+    },
+    {
+      "name": "Vitamin D",
+      "composition": "",
+      "importance": "Medium",
+      "quantity": 15,
+      "expiry": "2026-04-01",
+      "compartment": 2,
+      "dosages": [
+        {
+          "start": "21:00",
+          "end": "22:00",
+          "food_status": "After Food",
+          "remark": ""
+        }
+      ]
+    }
+  ],
+  "audio_files": {
+    "global": {
+      "greeting": "/static/audio\\2\\hi\\greeting_hi.mp3",
+      "dosage_alarm": "/static/audio\\2\\hi\\dosage_alarm_hi.mp3",
+      "snooze_reminder": "/static/audio\\2\\hi\\snooze_reminder_hi.mp3",
+      "confirmation": "/static/audio\\2\\hi\\confirmation_hi.mp3",
+      "manual_check": "/static/audio\\2\\hi\\manual_check_hi.mp3"
+    },
+    "medicines": {
+      "dolo650": {
+        "intro": "/static/audio\\2\\hi\\med_1\\intro.mp3",
+        "dosage_1": "/static/audio\\2\\hi\\med_1\\dosage_1.mp3",
+        "manual_prompt": "/static/audio\\2\\hi\\med_1\\manual_prompt.mp3",
+        "remark": "/static/audio\\2\\hi\\med_1\\remark.mp3"
+      },
+      "Vitamin D": {
+        "intro": "/static/audio\\2\\hi\\med_2\\intro.mp3",
+        "dosage_1": "/static/audio\\2\\hi\\med_2\\dosage_1.mp3",
+        "manual_prompt": "/static/audio\\2\\hi\\med_2\\manual_prompt.mp3",
+        "remark": "/static/audio\\2\\hi\\med_2\\remark.mp3"
+      }
+    }
+  }
+}

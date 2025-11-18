@@ -1,0 +1,17 @@
+<!-- app/templates/patient/alerts.html -->
+{% extends "shared/base.html" %}
+{% block content %}
+<h2 class="fw-bold text-center mb-4">🔔 Alerts & Notifications</h2>
+
+{% if alerts %}
+  {% for alert in alerts %}
+  <div class="alert alert-info shadow-sm mb-3">
+    <h6 class="mb-1 fw-bold">{{ alert.title }}</h6>
+    <p class="mb-1">{{ alert.message }}</p>
+    <small class="text-muted">{{ alert.created_at.strftime("%Y-%m-%d %H:%M") }}</small>
+  </div>
+  {% endfor %}
+{% else %}
+  <div class="alert alert-secondary text-center">No alerts yet 🎉</div>
+{% endif %}
+{% endblock %}

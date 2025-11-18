@@ -1,0 +1,101 @@
+<!-- app/templates/doctor/patient_analytics.html -->
+{% extends "shared/base.html" %}
+{% block content %}
+
+<h2 class="fw-bold text-center mb-4 text-success">📊 Analytics for {{ patient.name }}</h2>
+
+<div class="text-center mb-4">
+  <a href="{{ url_for('doctor.view_patient', patient_id=patient.id) }}" class="btn btn-outline-secondary">⬅ Back to Patient</a>
+</div>
+
+<!-- Summary Cards -->
+<div class="row text-center mb-4">
+  <div class="col-md-3 mb-3">
+    <div class="card shadow-sm border-success">
+      <div class="card-body">
+        <h6 class="text-muted">Adherence Rate</h6>
+        <h3 class="{% if stats.adherence < 60 %}text-danger{% elif stats.adherence < 85 %}text-warning{% else %}text-success{% endif %}">
+          {{ stats.adherence }} %
+        </h3>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 mb-3">
+    <div class="card shadow-sm border-info">
+      <div class="card-body">
+        <h6 class="text-muted">Total Medicines</h6>
+        <h3>{{ stats.total_meds }}</h3>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 mb-3">
+    <div class="card shadow-sm border-primary">
+      <div class="card-body">
+        <h6 class="text-muted">Total Dosages</h6>
+        <h3>{{ stats.total_dosages }}</h3>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 mb-3">
+    <div class="card shadow-sm border-danger">
+      <div class="card-body">
+        <h6 class="text-muted">Missed Doses</h6>
+        <h3>{{ stats.missed }}</h3>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Charts -->
+<div class="card shadow-sm p-4 mb-4">
+  <h5 class="fw-bold text-primary mb-3">📈 Adherence Trend (Last 7 Days)</h5>
+  <canvas id="adherenceChart" height="120"></canvas>
+</div>
+
+<div class="card shadow-sm p-4">
+  <h5 class="fw-bold text-secondary mb-3">💊 Doses by Medicine (Distribution)</h5>
+  <canvas id="medDistributionChart" height="120"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const ctx = document.getElementById('adherenceChart');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: {{ chart_labels|tojson }},
+      datasets: [{
+        label: 'Adherence %',
+        data: {{ chart_values|tojson }},
+        borderWidth: 3,
+        borderColor: 'rgb(75,192,192)',
+        fill: false,
+        tension: 0.3,
+        pointRadius: 5,
+        pointBackgroundColor: 'rgb(75,192,192)',
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: { beginAtZero: true, max: 100 }
+      }
+    }
+  });
+
+  // Mock distribution chart (replace later with real data if needed)
+  new Chart(document.getElementById('medDistributionChart'), {
+    type: 'bar',
+    data: {
+      labels: ['Morning', 'Afternoon', 'Evening'],
+      datasets: [{
+        label: 'Dosages Taken',
+        data: [12, 8, 10],
+        backgroundColor: ['rgba(75,192,192,0.6)', 'rgba(255,205,86,0.6)', 'rgba(255,99,132,0.6)']
+      }]
+    },
+    options: { responsive: true, scales: { y: { beginAtZero: true } } }
+  });
+</script>
+
+{% endblock %}

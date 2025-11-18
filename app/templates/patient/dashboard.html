@@ -1,0 +1,119 @@
+<!-- app\templates\patient\dashboard.html -->
+<!-- app/templates/patient/dashboard.html -->
+{% extends "shared/base.html" %}
+{% block content %}
+
+<h2 class="fw-bold text-center mb-4">👋 Welcome, {{ current_user.name }}!</h2>
+
+<div class="row g-4 text-center">
+  <div class="col-md-3">
+    <div class="card shadow p-3 bg-success text-white">
+      <h6>Taken</h6>
+      <h3>{{ stats.taken }}</h3>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card shadow p-3 bg-warning">
+      <h6>Dispensed but Not Eaten</h6>
+      <h3>{{ stats.not_eaten }}</h3>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card shadow p-3 bg-danger text-white">
+      <h6>Missed</h6>
+      <h3>{{ stats.missed }}</h3>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card shadow p-3 bg-info text-white">
+      <h6>Adherence %</h6>
+      <h3>{{ stats.adherence }}%</h3>
+    </div>
+  </div>
+</div>
+
+<hr class="my-4">
+
+<div class="row g-4">
+  <!-- Next Dose -->
+  <div class="col-md-4">
+    <div class="card shadow p-4">
+      <h5 class="fw-bold text-primary mb-3">🕒 Next Dose</h5>
+      {% if stats.next_dose.medicine %}
+        <p><strong>{{ stats.next_dose.medicine }}</strong> at <span class="text-success">{{ stats.next_dose.time }}</span></p>
+      {% else %}
+        <p class="text-muted">✅ All doses for today are done!</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- 7-Day Trend -->
+  <div class="col-md-8">
+    <div class="card shadow p-4">
+      <h5 class="fw-bold text-primary mb-3">📈 7-Day Adherence Trend</h5>
+      <canvas id="adherenceChart" height="120"></canvas>
+    </div>
+  </div>
+</div>
+
+<hr class="my-4">
+
+<!-- Alerts -->
+<div class="card shadow p-4">
+  <h5 class="fw-bold text-primary mb-3">🔔 Recent Alerts</h5>
+  {% if alerts %}
+    <ul class="list-group">
+      {% for a in alerts %}
+        <li class="list-group-item d-flex justify-content-between align-items-start">
+          <div>
+            <strong>{{ a.title }}</strong><br>
+            <small>{{ a.message }}</small>
+          </div>
+          <span class="badge bg-secondary">{{ a.created_at.strftime('%b %d, %I:%M %p') }}</span>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="text-muted">No alerts yet!</p>
+  {% endif %}
+</div>
+
+<hr class="my-4">
+
+<div class="text-center">
+  <a href="{{ url_for('patient.medicine') }}" class="btn btn-outline-primary mx-2">💊 Medicines</a>
+  <a href="{{ url_for('patient.device') }}" class="btn btn-outline-info mx-2">💻 Device</a>
+  <a href="{{ url_for('patient.analytics') }}" class="btn btn-outline-success mx-2">📊 Full Analytics</a>
+  <a href="{{ url_for('patient.link_doctor') }}" class="btn btn-outline-secondary mx-2">🤝 Connect Doctor</a>
+  <a href="{{ url_for('patient.history') }}" class="btn btn-outline-secondary mx-2">📇 Medicine History</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const ctx = document.getElementById('adherenceChart');
+const trendData = {{ stats.trend_data | tojson }};
+new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: trendData.map(d => d.date),
+    datasets: [{
+      label: 'Adherence %',
+      data: trendData.map(d => d.adherence),
+      borderWidth: 3,
+      tension: 0.4,
+      fill: true
+    }]
+  },
+  options: {
+    scales: { y: { beginAtZero: true, max: 100 } },
+    plugins: { legend: { display: false } }
+  }
+});
+</script>
+
+<style>
+.card { border-radius: 15px; }
+h3 { font-weight: 700; }
+</style>
+
+{% endblock %}

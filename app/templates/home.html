@@ -1,0 +1,41 @@
+<!-- app/templates/home.html -->
+{% extends "shared/base.html" %}
+{% block content %}
+
+<div class="text-center mt-5">
+  <h1 class="fw-bold text-dark">Kapsul Smart Pill Dispenser</h1>
+  <p class="lead text-muted mb-4">Smarter Health. Simple Medication. Connected Care.</p>
+
+  <a href="{{ url_for('auth.signup') }}" class="btn btn-dark btn-lg px-4 mx-2">Get Started</a>
+  <a href="{{ url_for('auth.login') }}" class="btn btn-outline-dark btn-lg px-4 mx-2">Login</a>
+</div>
+
+<div class="container mt-5">
+  <div class="row align-items-center">
+    <div class="col-md-6 text-center p-5 border rounded">
+      <p class="text-muted">🚧 The device is being developed…</p>
+    </div>
+
+    <div class="col-md-6 mt-4 mt-md-0">
+      <h2 class="fw-bold mb-3 text-dark">Your Healthcare, Automated</h2>
+      <p class="text-secondary">
+        Kapsul ensures you never miss your medicine again.
+        Connected to your doctor and personalized through this portal,
+        it tracks your medications, meals, and provides reminders and analytics.
+      </p>
+
+      <ul class="list-group list-group-flush mt-3">
+        <li class="list-group-item">Automated pill dispensing</li>
+        <li class="list-group-item">Real-time sync with your doctor</li>
+        <li class="list-group-item">Medication schedule & insights</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<footer class="text-center text-muted mt-5 mb-3">
+  <hr>
+  <p>© 2025 Kapsul | Built with ♥ by team NamastAI</p>
+</footer>
+
+{% endblock %}

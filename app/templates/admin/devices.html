@@ -1,0 +1,97 @@
+<!-- app/templates/admin/devices.html -->
+{% extends "shared/base.html" %}
+{% block content %}
+
+<h2 class="fw-bold mb-4 text-center">💊 Registered Devices</h2>
+
+<!-- Add Device Button -->
+<div class="text-end mb-3">
+  <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDeviceModal">
+    ➕ Add New Device
+  </button>
+</div>
+
+{% if devices %}
+<table class="table table-hover shadow-sm bg-white rounded">
+  <thead class="table-light">
+    <tr>
+      <th>#</th>
+      <th>Device ID</th>
+      <th>Status</th>
+      <th>Owner</th>
+      <th>Last Sync</th>
+      <th>Language</th>
+      <th>Alarm Tone</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for d in devices %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ d.device_code }}</td>
+        <td>
+          {% if d.status == 'active' %}
+            <span class="badge bg-success">Active</span>
+          {% else %}
+            <span class="badge bg-secondary">Inactive</span>
+          {% endif %}
+        </td>
+        <td>{{ d.owner.name if d.owner else '-' }}</td>
+        <td>{{ d.last_sync or '-' }}</td>
+        <td>{{ d.language }}</td>
+        <td>{{ d.alarm_tone }}</td>
+        <td>
+          <a href="{{ url_for('admin.delete_device', device_code=d.device_code) }}"
+             class="btn btn-sm btn-danger">Remove</a>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="alert alert-info text-center">No devices registered yet.</div>
+{% endif %}
+
+<!-- Add Device Modal -->
+<div class="modal fade" id="addDeviceModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="POST" action="{{ url_for('admin.add_device') }}">
+        <div class="modal-header">
+          <h5 class="modal-title">➕ Add New Device</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+          <div class="mb-3">
+            <label>Device Code</label>
+            <input type="text" class="form-control" name="device_code" required>
+          </div>
+
+          <div class="mb-3">
+            <label>Total Compartments</label>
+            <input type="number" class="form-control" name="total_compartments" value="7" min="1" max="10" required>
+          </div>
+
+          <div class="mb-3">
+            <label>Assign to Patient (optional)</label>
+            <select class="form-select" name="owner_id">
+              <option value="">-- Unassigned --</option>
+              {% for p in users %}
+                <option value="{{ p.id }}">{{ p.name }} ({{ p.username }})</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success">Add Device</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

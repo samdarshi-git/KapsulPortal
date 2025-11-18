@@ -1,0 +1,272 @@
+<!-- app\templates\patient\device.html -->
+{% extends "shared/base.html" %}
+{% block content %}
+
+<h2 class="fw-bold text-center mb-4">💊 Smart PillBox — Device Control</h2>
+
+{% if device %}
+<div class="row">
+
+    <!-- ======================== LEFT COLUMN ======================== -->
+    <div class="col-lg-4">
+
+        <!-- DEVICE STATUS CARD -->
+        <div class="card shadow-sm p-3 mb-4">
+            <h5 class="fw-bold text-primary">📡 Device Status</h5>
+
+            <p><strong>Device Code:</strong> {{ device.device_code }}</p>
+
+            <p><strong>Status:</strong>
+                {% if device.is_online() %}
+                    <span class="badge bg-success">Online</span>
+                {% else %}
+                    <span class="badge bg-danger">Offline</span>
+                {% endif %}
+            </p>
+
+            {% if not device.is_online() %}
+                <p class="text-danger small">⚠ Device is offline. Commands will queue.</p>
+            {% endif %}
+
+            <p><strong>Last Heartbeat:</strong><br>
+                {{ device.last_heartbeat.strftime("%Y-%m-%d %H:%M:%S") if device.last_heartbeat else "Never" }}
+            </p>
+
+            <!-- SYNC HASHES WITH STATUS ICONS -->
+            <h6 class="mt-3 fw-bold">Metadata Sync</h6>
+            <ul class="small">
+                <li>
+                    <strong>Config:</strong>
+                    {% if config_preview.hash != device.config_hash %}
+                        <span class="text-danger">Needs Sync</span>
+                    {% else %}
+                        <span class="text-success">OK</span>
+                    {% endif %}
+                </li>
+                <li>
+                    <strong>Schedule:</strong>
+                    {% if schedule_preview.hash != device.schedule_hash %}
+                        <span class="text-danger">Needs Sync</span>
+                    {% else %}
+                        <span class="text-success">OK</span>
+                    {% endif %}
+                </li>
+                <li>
+                    <strong>Audio:</strong>
+                    {% if audio_manifest.hash != device.audio_hash %}
+                        <span class="text-danger">Needs Sync</span>
+                    {% else %}
+                        <span class="text-success">OK</span>
+                    {% endif %}
+                </li>
+            </ul>
+
+            <!-- LANGUAGE -->
+            <form method="POST" class="mt-3">
+                <input type="hidden" name="action" value="change_language">
+                <div class="input-group">
+                    <label class="input-group-text">🌐 Language</label>
+                    <select name="language" class="form-select">
+                        <option value="en" {% if device.language == "en" %}selected{% endif %}>English</option>
+                        <option value="hi" {% if device.language == "hi" %}selected{% endif %}>Hindi</option>
+                    </select>
+                    <button class="btn btn-outline-primary">Update</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- STORAGE PANEL -->
+        {% if dev_state %}
+        <div class="card shadow-sm p-3 mb-4">
+            <h5 class="fw-bold text-primary">💾 Storage</h5>
+
+            <p><strong>Total:</strong> {{ dev_state.storage_total }} KB</p>
+            <p><strong>Used:</strong> {{ dev_state.storage_used }} KB</p>
+
+            {% set pct = (dev_state.storage_used / dev_state.storage_total) * 100 %}
+            <div class="progress mb-2">
+                <div class="progress-bar bg-info" style="width: {{ pct }}%"></div>
+            </div>
+
+            <button class="btn btn-sm btn-outline-secondary w-100 mb-2" 
+                    onclick="toggleSection('fileList')">
+                📁 Show / Hide Files
+            </button>
+
+            <pre id="fileList" class="bg-light small p-2 d-none">
+                {{ (dev_state.files or {}) | tojson(indent=2) }}
+            </pre>
+        </div>
+        {% endif %}
+
+    </div>
+
+
+    <!-- ======================== RIGHT COLUMN ======================== -->
+    <div class="col-lg-8">
+
+        <!-- COMMAND PANEL -->
+        <div class="card shadow-sm p-4 mb-4">
+            <h4 class="fw-bold text-primary mb-3">⚡ Device Commands</h4>
+
+            {% set disabled = "" if device.is_online() else "disabled" %}
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <form method="POST">
+                        <input type="hidden" name="action" value="dispense_now">
+                        <button class="btn btn-success w-100" {{disabled}}>💊 Dispense NOW</button>
+                    </form>
+                </div>
+
+                <div class="col-md-6">
+                    <form method="POST">
+                        <input type="hidden" name="action" value="start_alarm">
+                        <button class="btn btn-danger w-100" {{disabled}}>🚨 Start Alarm</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <form method="POST">
+                        <input type="hidden" name="action" value="stop_alarm">
+                        <button class="btn btn-primary w-100" {{disabled}}>🔕 Stop Alarm</button>
+                    </form>
+                </div>
+
+                <div class="col-md-6">
+                    <form method="POST">
+                        <input type="hidden" name="action" value="force_sync">
+                        <button class="btn btn-info w-100">🔄 Force Sync</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- DISPENSE SPECIFIC MED -->
+            <form method="POST" class="mb-3">
+                <input type="hidden" name="action" value="dispense_med">
+                <div class="input-group">
+                    <select name="medicine" class="form-select">
+                        {% for m in medications %}
+                        <option value="{{ m.name }}">{{ m.name }} (Comp {{ m.compartment }})</option>
+                        {% endfor %}
+                    </select>
+                    <button class="btn btn-outline-success" {{disabled}}>Dispense</button>
+                </div>
+            </form>
+
+            <!-- SNOOZE -->
+            <form method="POST" class="mb-3">
+                <input type="hidden" name="action" value="snooze">
+                <div class="input-group">
+                    <input type="number" name="minutes" value="10" class="form-control">
+                    <button class="btn btn-warning" {{disabled}}>⏳ Snooze</button>
+                </div>
+            </form>
+
+            <!-- DEV TOOLS -->
+            <hr>
+            <h5 class="fw-bold text-danger">🧪 Developer Tools</h5>
+
+            <form method="POST" class="mb-2">
+                <input type="hidden" name="action" value="set_led">
+                <div class="input-group">
+                    <select name="color" class="form-select">
+                        <option value="red">Red</option>
+                        <option value="green">Green</option>
+                        <option value="blue">Blue</option>
+                        <option value="off">Off</option>
+                    </select>
+                    <button class="btn btn-outline-primary" {{disabled}}>Set LED</button>
+                </div>
+            </form>
+
+            <form method="POST" class="mb-2">
+                <input type="hidden" name="action" value="play_audio">
+                <div class="input-group">
+                    <select name="sound" class="form-select">
+                        <option value="snooze">Snooze</option>
+                        <option value="dispense_alarm">Dispense Alarm</option>
+                    </select>
+                    <button class="btn btn-outline-dark" {{disabled}}>Play Audio</button>
+                </div>
+            </form>
+
+            <form method="POST">
+                <input type="hidden" name="action" value="servo_test">
+                <button class="btn btn-outline-secondary w-100 mb-2" {{disabled}}>🔧 Test Servo</button>
+            </form>
+
+            <form method="POST">
+                <input type="hidden" name="action" value="reboot">
+                <button class="btn btn-dark w-100" {{disabled}}>♻ Reboot Device</button>
+            </form>
+
+        </div>
+
+
+        <!-- ======================== INCOMING LOGS ======================== -->
+        <div class="card shadow-sm p-4 mb-4">
+            <h4 class="fw-bold text-success">📥 Incoming Logs (Last 15)</h4>
+
+            {% if recent_logs %}
+            <table class="table table-bordered table-sm small">
+                <thead class="table-light">
+                    <tr>
+                        <th>Medicine</th>
+                        <th>Status</th>
+                        <th>Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in recent_logs %}
+                    <tr>
+                        <td>{{ log.med_name }}</td>
+                        <td>{{ log.status }}</td>
+                        <td>{{ log.taken_time.strftime("%Y-%m-%d %H:%M") }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+                <p class="text-muted">No logs yet.</p>
+            {% endif %}
+        </div>
+
+        <!-- ======================== PREVIEW PANEL ======================== -->
+        <div class="card shadow-sm p-4 mb-4">
+            <h4 class="fw-bold text-primary">📦 Current Portal Data (Preview)</h4>
+
+            <button class="btn btn-sm btn-outline-secondary mb-2"
+                    onclick="toggleSection('cfg')">Config</button>
+            <pre id="cfg" class="bg-light p-2 small d-none">
+{{ (config_preview.data or {}) | tojson(indent=2) }}
+            </pre>
+
+            <button class="btn btn-sm btn-outline-secondary mb-2"
+                    onclick="toggleSection('sch')">Schedule</button>
+            <pre id="sch" class="bg-light p-2 small d-none">
+{{ (schedule_preview.data or {}) | tojson(indent=2) }}
+            </pre>
+
+            <button class="btn btn-sm btn-outline-secondary mb-2"
+                    onclick="toggleSection('aud')">Audio Manifest</button>
+            <pre id="aud" class="bg-light p-2 small d-none">
+{{ (audio_manifest.data or {}) | tojson(indent=2) }}
+            </pre>
+        </div>
+
+    </div>
+</div>
+
+{% endif %}
+
+<script>
+function toggleSection(id) {
+    const el = document.getElementById(id);
+    el.classList.toggle("d-none");
+}
+</script>
+
+{% endblock %}

@@ -1,0 +1,230 @@
+<!-- app/templates/admin/dashboard.html -->
+{% extends "shared/base.html" %}
+{% block content %}
+
+<h2 class="fw-bold text-center mb-4 text-primary">⚙️ Admin Control Center</h2>
+
+<!-- Summary Cards -->
+<div class="row text-center mb-4">
+  <div class="col-md-3">
+    <div class="card shadow-sm border-success p-3">
+      <h6>Total Patients</h6>
+      <h3 class="fw-bold text-success">{{ total_patients }}</h3>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card shadow-sm border-info p-3">
+      <h6>Total Doctors</h6>
+      <h3 class="fw-bold text-info">{{ total_doctors }}</h3>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card shadow-sm border-dark p-3">
+      <h6>Total Devices</h6>
+      <h3 class="fw-bold text-dark">{{ total_devices }}</h3>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card shadow-sm border-warning p-3">
+      <h6>Pending Approvals</h6>
+      <h3 class="fw-bold text-warning">{{ pending_users|length }}</h3>
+    </div>
+  </div>
+</div>
+
+<!-- Fake Device Logs Section -->
+<div class="card shadow-sm p-4 mb-5">
+  <h5 class="fw-bold text-primary mb-3">📡 Recent Device Activity (Sample UI Logs)</h5>
+
+  <!-- Fake Progress Bar (Sync Simulation) -->
+  <div class="mb-3">
+    <label class="fw-bold text-muted">Sync Progress</label>
+    <div class="progress" style="height: 10px;">
+      <div class="progress-bar progress-bar-striped progress-bar-animated"
+           id="adminSyncProgress" style="width: 0%;"></div>
+    </div>
+  </div>
+
+  <script>
+    let ap = 0;
+    const abar = document.getElementById("adminSyncProgress");
+    const aint = setInterval(() => {
+      ap += 2;
+      abar.style.width = ap + "%";
+      if (ap >= 100) clearInterval(aint);
+    }, 900);  // ~45 seconds
+  </script>
+
+  <ul class="list-group small mt-3">
+    <li class="list-group-item">Device A12X8 — Sync completed.</li>
+    <li class="list-group-item">Device R09TP — Warning: Battery 18%.</li>
+    <li class="list-group-item">Device B23QP — Dispensed Insulin (Comp 6).</li>
+    <li class="list-group-item">Device T81LM — Critical missed dose: Metaformin.</li>
+    <li class="list-group-item">Device P10QQ — Dispensed Otium Capsule (Override at 12:00pm).</li>
+    <li class="list-group-item">Device Z89AK — Near expiry: Aspirin.</li>
+  </ul>
+</div>
+
+<!-- Pending Approvals -->
+<div class="card shadow-sm p-4 mb-5">
+  <h5 class="fw-bold text-warning mb-3">⏳ Pending User Approvals</h5>
+  {% if pending_users %}
+  <table class="table table-hover align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>#</th><th>Name</th><th>Email</th><th>Role</th><th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for u in pending_users %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ u.name }}</td>
+        <td>{{ u.email or '—' }}</td>
+        <td><span class="badge bg-secondary text-uppercase">{{ u.role }}</span></td>
+        <td>
+          <form method="POST" class="d-inline">
+            <input type="hidden" name="user_id" value="{{ u.id }}">
+            <button class="btn btn-success btn-sm" name="approve_user">Approve</button>
+          </form>
+          <form method="POST" class="d-inline">
+            <input type="hidden" name="user_id" value="{{ u.id }}">
+            <button class="btn btn-danger btn-sm" name="reject_user">Reject</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="text-muted text-center mb-0">🎉 All users are approved.</p>
+  {% endif %}
+</div>
+
+<!-- All Users -->
+<div class="card shadow-sm p-4 mb-5">
+  <h5 class="fw-bold text-primary mb-3">👥 Registered Users</h5>
+  <table class="table table-hover align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>#</th><th>Name</th><th>Username</th><th>Role</th><th>Approved</th><th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for u in patients + doctors %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ u.name }}</td>
+        <td>{{ u.username }}</td>
+        <td><span class="badge bg-{% if u.role=='patient' %}success{% else %}info{% endif %}">{{ u.role }}</span></td>
+        <td>
+          {% if u.approved %}
+            <span class="badge bg-success">Yes</span>
+          {% else %}
+            <span class="badge bg-warning text-dark">No</span>
+          {% endif %}
+        </td>
+        <td>
+          <form method="POST" class="d-inline">
+            <input type="hidden" name="user_id" value="{{ u.id }}">
+            <button class="btn btn-sm btn-outline-danger" name="delete_user">🗑 Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Devices -->
+<div class="card shadow-sm p-4">
+
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="fw-bold text-success mb-0">💊 Devices</h5>
+    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addDeviceModal">➕ Add Device</button>
+  </div>
+
+  {% if devices %}
+  <table class="table table-hover align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>#</th><th>Device Code</th><th>Status</th><th>Owner</th><th>Compartments</th><th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for d in devices %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ d.device_code }}</td>
+        <td>
+          {% if d.status == 'active' %}
+            <span class="badge bg-success">Active</span>
+          {% else %}
+            <span class="badge bg-secondary">Inactive</span>
+          {% endif %}
+        </td>
+        <td>
+          <form method="POST" class="d-flex align-items-center gap-2">
+            <input type="hidden" name="device_code" value="{{ d.device_code }}">
+            <select name="owner_id" class="form-select form-select-sm">
+              <option value="">-- Unassigned --</option>
+              {% for p in patients %}
+                <option value="{{ p.id }}" {% if d.owner_id == p.id %}selected{% endif %}>{{ p.name }}</option>
+              {% endfor %}
+            </select>
+            <button class="btn btn-outline-secondary btn-sm" name="update_device_owner">Update</button>
+          </form>
+        </td>
+        <td>{{ d.total_compartments }}</td>
+        <td>
+          <form method="POST" class="d-inline">
+            <input type="hidden" name="device_code" value="{{ d.device_code }}">
+            <button class="btn btn-sm btn-danger" name="delete_device">🗑 Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="text-center text-muted mb-0">No devices registered yet.</p>
+  {% endif %}
+</div>
+
+<!-- Add Device Modal -->
+<div class="modal fade" id="addDeviceModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="POST">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title">➕ Add New Device</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label>Device Code</label>
+            <input type="text" class="form-control" name="device_code" required>
+          </div>
+          <div class="mb-3">
+            <label>Total Compartments</label>
+            <input type="number" class="form-control" name="total_compartments" value="8" min="1" max="12" required>
+          </div>
+          <div class="mb-3">
+            <label>Assign to Patient (optional)</label>
+            <select class="form-select" name="owner_id">
+              <option value="">-- Unassigned --</option>
+              {% for p in patients %}
+                <option value="{{ p.id }}">{{ p.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-success" name="add_device">Add Device</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

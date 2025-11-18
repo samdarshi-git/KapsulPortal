@@ -1,0 +1,41 @@
+<!-- app/templates/auth/signup.html -->
+{% extends "shared/base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card shadow p-4">
+      <h3 class="text-center mb-3">🧾 Signup</h3>
+      <form method="POST">
+        <div class="mb-3">
+          <label>Full Name</label>
+          <input type="text" class="form-control" name="name" required>
+        </div>
+        <div class="mb-3">
+          <label>Username</label>
+          <input type="text" class="form-control" name="username" required>
+        </div>
+        <div class="mb-3">
+          <label>Email (optional)</label>
+          <input type="email" class="form-control" name="email">
+        </div>
+        <div class="mb-3">
+          <label>Password</label>
+          <input type="password" class="form-control" name="password" required>
+        </div>
+        <div class="mb-3">
+          <label>Role</label>
+          <select class="form-select" name="role" required>
+            <option value="patient">Patient</option>
+            <option value="doctor">Doctor</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-success w-100">Create Account</button>
+      </form>
+      <p class="text-center mt-3">
+        Already have an account?
+        <a href="{{ url_for('auth.login') }}">Login</a>
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

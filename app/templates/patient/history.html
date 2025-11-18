@@ -1,0 +1,96 @@
+<!-- app/templates/patient/history.html -->
+{% extends "shared/base.html" %}
+{% block content %}
+
+<h2 class="fw-bold text-center mb-4">📜 Medicine History</h2>
+
+<form method="GET" class="row g-3 mb-4 justify-content-center">
+  <div class="col-md-4">
+    <select name="medicine" class="form-select">
+      <option value="">All Medicines</option>
+      {% for m in med_names %}
+        <option value="{{ m }}" {% if m == med_filter %}selected{% endif %}>{{ m }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-3">
+    <input type="date" name="date" value="{{ date_filter }}" class="form-control" placeholder="Filter by Date">
+  </div>
+  <div class="col-md-2">
+    <button type="submit" class="btn btn-primary w-100">🔍 Filter</button>
+  </div>
+  <div class="col-md-2">
+    <a href="{{ url_for('patient.history') }}" class="btn btn-outline-secondary w-100">Reset</a>
+  </div>
+</form>
+
+{% if logs %}
+  <div class="timeline">
+    {% for log in logs %}
+      {% set status_color = 'success' if not log.missed else 'danger' %}
+      {% set icon = '✅' if not log.missed else '❌' %}
+      <div class="timeline-item border-start border-3 border-{{ status_color }} ps-3 mb-3">
+        <div class="d-flex justify-content-between">
+          <h6 class="mb-1 fw-bold">
+            {{ icon }} {{ log.med_name }}
+            {% if log.device_id %}
+              <small class="text-muted">(Device: {{ log.device_id }})</small>
+            {% endif %}
+          </h6>
+          <small class="text-muted">{{ log.taken_time.strftime('%Y-%m-%d %I:%M %p') }}</small>
+        </div>
+        <p class="mb-1">
+          {% if not log.missed %}
+            🕒 Taken {{ 'After Food' if log.food_type == 'After Food' else 'Before Food' }}.
+          {% else %}
+            ⚠️ Missed this dose.
+          {% endif %}
+        </p>
+        {% if log.rescheduled %}
+          <span class="badge bg-warning text-dark">Snoozed/Rescheduled</span>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="alert alert-info text-center">
+    ⚠️ No medicine history found for the selected filters.
+  </div>
+{% endif %}
+
+<div class="text-center mt-4">
+  <a href="{{ url_for('patient.analytics') }}" class="btn btn-outline-primary">⬅ Back to Analytics</a>
+</div>
+
+<style>
+.timeline {
+  position: relative;
+  margin-left: 10px;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 10px;
+  width: 2px;
+  background-color: #dee2e6;
+  top: 0;
+  bottom: 0;
+}
+.timeline-item {
+  position: relative;
+  margin-left: 20px;
+}
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -13px;
+  top: 6px;
+  width: 12px;
+  height: 12px;
+  background-color: #fff;
+  border: 3px solid var(--bs-primary);
+  border-radius: 50%;
+}
+</style>
+
+{% endblock %}

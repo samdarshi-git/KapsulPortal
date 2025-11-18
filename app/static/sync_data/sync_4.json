@@ -1,0 +1,163 @@
+{
+  "patient": "Anku Sharma",
+  "device_code": "ANKU1001",
+  "language": "hi",
+  "timestamp": "2025-11-04T08:06:49.547822",
+  "medicines": [
+    {
+      "name": "Paracetamol",
+      "compartment": 1,
+      "composition": "Acetaminophen 500mg",
+      "expiry": "2025-11-01",
+      "dosages": [
+        {
+          "start": "09 AM",
+          "end": "10 AM",
+          "food": "After Food",
+          "remark": "Morning dose"
+        },
+        {
+          "start": "08 PM",
+          "end": "09 PM",
+          "food": "Before Food",
+          "remark": "Evening dose"
+        },
+        {
+          "start": "12 PM",
+          "end": "01 PM",
+          "food": "After Food",
+          "remark": "Bukhar ki dawai lelein"
+        }
+      ]
+    },
+    {
+      "name": "Vitamin C",
+      "compartment": 2,
+      "composition": "Ascorbic Acid 1000mg",
+      "expiry": "2025-11-21",
+      "dosages": [
+        {
+          "start": "09 AM",
+          "end": "10 AM",
+          "food": "After Food",
+          "remark": "Morning dose"
+        },
+        {
+          "start": "08 PM",
+          "end": "09 PM",
+          "food": "Before Food",
+          "remark": "Evening dose"
+        }
+      ]
+    },
+    {
+      "name": "Amoxicillin",
+      "compartment": 3,
+      "composition": "Amoxicillin 250mg",
+      "expiry": "2025-11-22",
+      "dosages": [
+        {
+          "start": "09 AM",
+          "end": "10 AM",
+          "food": "After Food",
+          "remark": "Morning dose"
+        },
+        {
+          "start": "08 PM",
+          "end": "09 PM",
+          "food": "Before Food",
+          "remark": "Evening dose"
+        }
+      ]
+    },
+    {
+      "name": "Pantoprazole",
+      "compartment": 4,
+      "composition": "Pantoprazole 40mg",
+      "expiry": "2025-11-23",
+      "dosages": [
+        {
+          "start": "09 AM",
+          "end": "10 AM",
+          "food": "After Food",
+          "remark": "Morning dose"
+        },
+        {
+          "start": "08 PM",
+          "end": "09 PM",
+          "food": "Before Food",
+          "remark": "Evening dose"
+        }
+      ]
+    },
+    {
+      "name": "Metformin",
+      "compartment": 5,
+      "composition": "Metformin 500mg",
+      "expiry": "2025-11-24",
+      "dosages": [
+        {
+          "start": "09 AM",
+          "end": "10 AM",
+          "food": "After Food",
+          "remark": "Morning dose"
+        },
+        {
+          "start": "08 PM",
+          "end": "09 PM",
+          "food": "Before Food",
+          "remark": "Evening dose"
+        }
+      ]
+    }
+  ],
+  "audio_files": {
+    "global": {
+      "snooze_reminder": "http://192.168.72.136:5000/static/audio/4/en/snooze_reminder.mp3",
+      "manual_ask": "http://192.168.72.136:5000/static/audio/4/en/manual_ask.mp3",
+      "self_take_confirm": "http://192.168.72.136:5000/static/audio/4/en/self_take_confirm.mp3",
+      "have_you_taken": "http://192.168.72.136:5000/static/audio/4/en/have_you_taken.mp3"
+    },
+    "medicines": {
+      "Paracetamol": {
+        "dosage_1": "http://192.168.72.136:5000/static/audio/4/en/med_1/dosage_1.mp3",
+        "dosage_2": "http://192.168.72.136:5000/static/audio/4/en/med_1/dosage_2.mp3",
+        "dosage_3": "http://192.168.72.136:5000/static/audio/4/en/med_1/dosage_3.mp3",
+        "manual_prompt": "http://192.168.72.136:5000/static/audio/4/en/med_1/manual_prompt.mp3",
+        "location": "http://192.168.72.136:5000/static/audio/4/en/med_1/location.mp3"
+      },
+      "Vitamin C": {
+        "dosage_1": "http://192.168.72.136:5000/static/audio/4/en/med_2/dosage_1.mp3",
+        "dosage_2": "http://192.168.72.136:5000/static/audio/4/en/med_2/dosage_2.mp3",
+        "manual_prompt": "http://192.168.72.136:5000/static/audio/4/en/med_2/manual_prompt.mp3",
+        "location": "http://192.168.72.136:5000/static/audio/4/en/med_2/location.mp3"
+      },
+      "Amoxicillin": {
+        "dosage_1": "http://192.168.72.136:5000/static/audio/4/en/med_3/dosage_1.mp3",
+        "dosage_2": "http://192.168.72.136:5000/static/audio/4/en/med_3/dosage_2.mp3",
+        "manual_prompt": "http://192.168.72.136:5000/static/audio/4/en/med_3/manual_prompt.mp3",
+        "location": "http://192.168.72.136:5000/static/audio/4/en/med_3/location.mp3"
+      },
+      "Pantoprazole": {
+        "dosage_1": "http://192.168.72.136:5000/static/audio/4/en/med_4/dosage_1.mp3",
+        "dosage_2": "http://192.168.72.136:5000/static/audio/4/en/med_4/dosage_2.mp3",
+        "manual_prompt": "http://192.168.72.136:5000/static/audio/4/en/med_4/manual_prompt.mp3",
+        "location": "http://192.168.72.136:5000/static/audio/4/en/med_4/location.mp3"
+      },
+      "Metformin": {
+        "dosage_1": "http://192.168.72.136:5000/static/audio/4/en/med_5/dosage_1.mp3",
+        "dosage_2": "http://192.168.72.136:5000/static/audio/4/en/med_5/dosage_2.mp3",
+        "manual_prompt": "http://192.168.72.136:5000/static/audio/4/en/med_5/manual_prompt.mp3",
+        "location": "http://192.168.72.136:5000/static/audio/4/en/med_5/location.mp3"
+      }
+    },
+    "expiry": {
+      "Paracetamol": "http://192.168.72.136:5000/static/audio/4/en/expiry_1.mp3",
+      "Vitamin C": "http://192.168.72.136:5000/static/audio/4/en/expiry_2.mp3",
+      "Amoxicillin": "http://192.168.72.136:5000/static/audio/4/en/expiry_3.mp3",
+      "Pantoprazole": "http://192.168.72.136:5000/static/audio/4/en/expiry_4.mp3",
+      "Metformin": "http://192.168.72.136:5000/static/audio/4/en/expiry_5.mp3"
+    }
+  },
+  "next_sync_minutes": 30
+}

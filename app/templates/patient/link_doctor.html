@@ -1,0 +1,82 @@
+<!-- app\templates\patient\link_doctor.html -->
+{% extends "shared/base.html" %}
+{% block content %}
+
+<h2 class="fw-bold mb-4 text-center">🤝 Doctor Connect & Access Control</h2>
+
+<div class="row">
+  <div class="col-md-5">
+    <div class="card shadow-sm p-4 mb-4">
+      <h5 class="fw-bold text-primary mb-3">➕ Link a New Doctor</h5>
+      <form method="POST">
+        <div class="mb-3">
+          <label class="form-label">Select Doctor</label>
+          <select class="form-select" name="doctor_id" required>
+            <option value="">-- Choose Doctor --</option>
+            {% for d in doctors %}
+              <option value="{{ d.id }}">{{ d.name }} ({{ d.username }})</option>
+            {% endfor %}
+          </select>
+        </div>
+        <button type="submit" class="btn btn-success w-100">Send Link Request</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="col-md-7">
+    <div class="card shadow-sm p-4 mb-4">
+      <h5 class="fw-bold text-primary mb-3">👨‍⚕️ Linked & Pending Doctors</h5>
+
+      {% if links %}
+      <form method="POST">
+        <table class="table table-bordered align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Doctor</th>
+              <th>Status</th>
+              <th>Alerts</th>
+              <th>Analytics</th>
+              <th>Med Updates</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for link in links %}
+            <tr>
+              <td>Dr. {{ link.doctor.name }}</td>
+              <td>
+                {% if link.active %}
+                  <span class="badge bg-success">Active</span>
+                {% else %}
+                  <span class="badge bg-warning text-dark">Pending</span>
+                {% endif %}
+              </td>
+              <td>
+                <input type="checkbox" name="alerts_{{ link.id }}" {% if link.allow_alerts %}checked{% endif %} {% if not link.active %}disabled{% endif %}>
+              </td>
+              <td>
+                <input type="checkbox" name="analytics_{{ link.id }}" {% if link.allow_analytics %}checked{% endif %} {% if not link.active %}disabled{% endif %}>
+              </td>
+              <td>
+                <input type="checkbox" name="update_{{ link.id }}" {% if link.allow_med_update %}checked{% endif %} {% if not link.active %}disabled{% endif %}>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        <button type="submit" name="save_permissions" class="btn btn-primary w-100 mt-3">
+          💾 Save Permissions
+        </button>
+      </form>
+      {% else %}
+        <div class="alert alert-info text-center">⚠️ You have not linked any doctors yet.</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<style>
+.badge { font-size: 0.9rem; }
+</style>
+
+{% endblock %}

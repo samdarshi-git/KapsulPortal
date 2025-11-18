@@ -1,0 +1,43 @@
+<!-- app/templates/doctor/patients.html -->
+{% extends "shared/base.html" %}
+{% block content %}
+<h2 class="fw-bold text-center mb-4">👥 My Linked Patients</h2>
+
+{% if links %}
+<div class="card shadow p-4">
+  <table class="table table-hover align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>#</th>
+        <th>Patient</th>
+        <th>Permissions</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for link in links %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ link.patient_link.name }}</td>
+        <td>
+          {% if link.allow_alerts %}<span class="badge bg-info">Alerts</span>{% endif %}
+          {% if link.allow_analytics %}<span class="badge bg-success">Analytics</span>{% endif %}
+          {% if link.allow_med_update %}<span class="badge bg-warning text-dark">Med Update</span>{% endif %}
+          {% if not (link.allow_alerts or link.allow_analytics or link.allow_med_update) %}
+            <span class="badge bg-secondary">No Access</span>
+          {% endif %}
+        </td>
+        <td>
+          <a href="{{ url_for('doctor.view_patient', patient_id=link.patient_id) }}" class="btn btn-sm btn-outline-primary">
+            View Details
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="alert alert-info text-center">No patients linked yet.</div>
+{% endif %}
+{% endblock %}

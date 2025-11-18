@@ -1,0 +1,41 @@
+<!-- app/templates/admin/approvals.html -->
+{% extends "shared/base.html" %}
+{% block content %}
+
+<h2 class="fw-bold text-center mb-4">👥 Pending User Approvals</h2>
+
+{% if pending_users %}
+  <div class="table-responsive">
+    <table class="table table-hover align-middle shadow-sm bg-white rounded">
+      <thead class="table-primary">
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Name</th>
+          <th scope="col">Email</th>
+          <th scope="col">Role</th>
+          <th scope="col" class="text-center">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in pending_users %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td>{{ user.name }}</td>
+          <td>{{ user.email }}</td>
+          <td class="text-capitalize">{{ user.role }}</td>
+          <td class="text-center">
+            <a href="{{ url_for('admin.approve_user', user_id=user.id) }}" class="btn btn-success btn-sm px-3">Approve</a>
+            <a href="{{ url_for('admin.reject_user', user_id=user.id) }}" class="btn btn-danger btn-sm px-3">Reject</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <div class="alert alert-info text-center">
+    🎉 No pending users right now!
+  </div>
+{% endif %}
+
+{% endblock %}

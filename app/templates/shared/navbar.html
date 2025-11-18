@@ -1,0 +1,33 @@
+<!-- app/templates/shared/navbar.html -->
+
+<nav class="navbar navbar-expand-lg shadow-sm">
+  <div class="container-fluid px-4">
+
+    <a class="navbar-brand fw-bold text-dark">Kapsul</a>
+
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto align-items-center">
+        {% if current_user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link fw-medium px-3" href="{{ url_for(current_user.role + '.dashboard') }}">Dashboard</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link fw-medium px-3" href="{{ url_for('auth.logout') }}">Logout</a>
+          </li>
+        {% else %}
+          <li class="nav-item">
+            <a class="nav-link fw-medium px-3" href="{{ url_for('auth.login') }}">Login</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link fw-medium px-3" href="{{ url_for('auth.signup') }}">Signup</a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+
+  </div>
+</nav>

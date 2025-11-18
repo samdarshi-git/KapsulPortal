@@ -1,0 +1,61 @@
+{
+  "patient": "Samdarshi ",
+  "device_code": "2415",
+  "language": "hi",
+  "timestamp": "2025-11-03T19:26:36.192951",
+  "medicines": [
+    {
+      "name": "dolo650",
+      "compartment": 1,
+      "composition": "paracetamol",
+      "expiry": "2026-01-01",
+      "dosages": [
+        {
+          "start": "09 AM",
+          "end": "10 AM",
+          "food": "Before Food",
+          "remark": ""
+        }
+      ]
+    },
+    {
+      "name": "Vitamin D",
+      "compartment": 2,
+      "composition": "",
+      "expiry": "2026-04-01",
+      "dosages": [
+        {
+          "start": "09 PM",
+          "end": "10 PM",
+          "food": "After Food",
+          "remark": ""
+        }
+      ]
+    }
+  ],
+  "audio_files": {
+    "global": {
+      "snooze_reminder": "/static/audio\\2\\hi\\snooze_reminder.mp3",
+      "manual_ask": "/static/audio\\2\\hi\\manual_ask.mp3",
+      "self_take_confirm": "/static/audio\\2\\hi\\self_take_confirm.mp3",
+      "have_you_taken": "/static/audio\\2\\hi\\have_you_taken.mp3"
+    },
+    "medicines": {
+      "dolo650": {
+        "dosage_1": "/static/audio\\2\\hi\\med_1\\dosage_1.mp3",
+        "manual_prompt": "/static/audio\\2\\hi\\med_1\\manual_prompt.mp3",
+        "location": "/static/audio\\2\\hi\\med_1\\location.mp3"
+      },
+      "Vitamin D": {
+        "dosage_1": "/static/audio\\2\\hi\\med_2\\dosage_1.mp3",
+        "manual_prompt": "/static/audio\\2\\hi\\med_2\\manual_prompt.mp3",
+        "location": "/static/audio\\2\\hi\\med_2\\location.mp3"
+      }
+    },
+    "expiry": {
+      "dolo650": "/static/audio\\2\\hi\\expiry_1.mp3",
+      "Vitamin D": "/static/audio\\2\\hi\\expiry_2.mp3"
+    }
+  },
+  "next_sync_minutes": 30
+}

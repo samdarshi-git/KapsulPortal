@@ -1,0 +1,243 @@
+<!-- app/templates/patient/medicine.html -->
+{% extends "shared/base.html" %}
+{% block content %}
+
+<h2 class="fw-bold mb-4 text-center">🧩 Compartment-wise Medicines (Max 8)</h2>
+
+<div class="row">
+{% for i in range(1,9) %}
+  {% set m = meds[i] %}
+  {% set color = 'secondary' if not m else 'danger' if m.critical else 'success' %}
+
+  <div class="col-md-6 mb-4">
+    <div class="card shadow border-{{ color }} medicine-card">
+
+      <!-- ================= CARD HEADER ================= -->
+      <div class="card-header bg-{{ color }} text-white d-flex justify-content-between align-items-center">
+        <strong>Compartment {{ i }}</strong>
+
+        <button type="button" class="btn btn-light btn-sm toggle-edit">
+          {% if m %}✏️ Edit{% else %}➕ Add{% endif %}
+        </button>
+      </div>
+
+      <!-- ================= CARD BODY ================= -->
+      <div class="card-body">
+
+        <form method="POST" class="medicine-form" style="pointer-events:none;opacity:0.75;">
+          <input type="hidden" name="compartment" value="{{ i }}">
+
+          <div class="row g-3">
+
+            <!-- NAME -->
+            <div class="col-md-6">
+              <label class="fw-bold">Name</label>
+              <input type="text" class="form-control"
+                     name="name" value="{{ m.name if m else '' }}" required
+                     {% if m %}readonly{% endif %}>
+            </div>
+
+            <!-- COMPOSITION -->
+            <div class="col-md-6">
+              <label class="fw-bold">Composition</label>
+              <input type="text" class="form-control"
+                     name="composition" value="{{ m.composition if m else '' }}"
+                     {% if m %}readonly{% endif %}>
+            </div>
+
+            <!-- CRITICAL FLAG -->
+            <div class="col-md-4">
+              <label class="fw-bold">Critical</label>
+              <select class="form-select" name="critical" {% if m %}disabled{% endif %}>
+                <option value="False" {% if m and not m.critical %}selected{% endif %}>No</option>
+                <option value="True" {% if m and m.critical %}selected{% endif %}>Yes</option>
+              </select>
+            </div>
+
+            <!-- QUANTITY -->
+            <div class="col-md-4">
+              <label class="fw-bold">Quantity</label>
+              <input type="number" class="form-control"
+                     name="quantity" min="1"
+                     value="{{ m.quantity if m else '' }}"
+                     {% if m %}readonly{% endif %}>
+            </div>
+
+            <!-- EXPIRY -->
+            <div class="col-md-4">
+              <label class="fw-bold">Expiry</label>
+              <div class="input-group">
+                <select class="form-select" name="expiry_month" {% if m %}disabled{% endif %}>
+                  {% for mo in range(1,13) %}
+                    <option value="{{mo}}"
+                      {% if m and m.expiry.month == mo %}selected{% endif %}>{{mo}}</option>
+                  {% endfor %}
+                </select>
+
+                <select class="form-select" name="expiry_year" {% if m %}disabled{% endif %}>
+                  {% for y in range(2025,2035) %}
+                    <option value="{{y}}"
+                      {% if m and m.expiry.year == y %}selected{% endif %}>{{y}}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+
+          </div>
+
+          <hr class="my-3">
+
+          <!-- ================= DOSAGES ================= -->
+          <h6 class="fw-bold">🕒 Dosages</h6>
+          <div class="dosage-container">
+
+            {% if m and m.dosages %}
+              {% for d in m.dosages %}
+              <div class="row g-2 mb-2 dosage">
+                <div class="col-md-2">
+                  <label class="small">Start</label>
+                  <select class="form-select" name="time_start[]">
+                    {% for h in range(0,24) %}
+                      <option value="{{h}}"
+                        {% if d.time_range_start.hour == h %}selected{% endif %}>{{h}}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+
+                <div class="col-md-2">
+                  <label class="small">End</label>
+                  <select class="form-select" name="time_end[]">
+                    {% for h in range(0,24) %}
+                      <option value="{{h}}"
+                        {% if d.time_range_end.hour == h %}selected{% endif %}>{{h}}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+
+                <div class="col-md-4">
+                  <label class="small">Food</label>
+                  <select class="form-select" name="food_status[]">
+                    {% for f in ['Before Food','After Food','Empty Stomach','Doesn’t Matter'] %}
+                      <option {% if d.food_status == f %}selected{% endif %}>{{ f }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+
+                <div class="col-md-4">
+                  <label class="small">Remark</label>
+                  <input type="text" name="remark[]" class="form-control"
+                         value="{{ d.remark }}">
+                </div>
+              </div>
+              {% endfor %}
+
+            {% else %}
+              <!-- Default empty dosage row -->
+              <div class="row g-2 mb-2 dosage">
+                <div class="col-md-2">
+                  <label class="small">Start</label>
+                  <select class="form-select" name="time_start[]">
+                    {% for h in range(0,24) %}<option value="{{h}}">{{h}}</option>{% endfor %}
+                  </select>
+                </div>
+
+                <div class="col-md-2">
+                  <label class="small">End</label>
+                  <select class="form-select" name="time_end[]">
+                    {% for h in range(0,24) %}<option value="{{h}}">{{h}}</option>{% endfor %}
+                  </select>
+                </div>
+
+                <div class="col-md-4">
+                  <label class="small">Food</label>
+                  <select class="form-select" name="food_status[]">
+                    <option>Before Food</option>
+                    <option>After Food</option>
+                    <option>Empty Stomach</option>
+                    <option>Doesn’t Matter</option>
+                  </select>
+                </div>
+
+                <div class="col-md-4">
+                  <label class="small">Remark</label>
+                  <input type="text" class="form-control" name="remark[]" placeholder="Optional">
+                </div>
+              </div>
+            {% endif %}
+
+          </div>
+
+          <!-- BUTTONS -->
+          <div class="d-flex justify-content-between align-items-center mt-3">
+            <button type="button"
+                    class="btn btn-outline-primary btn-sm add-dosage-btn"
+                    style="display:none;">
+              ➕ Add Another Dosage
+            </button>
+
+            <button type="submit"
+                    class="btn btn-success btn-sm save-btn"
+                    style="display:none;">
+              💾 Save
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+{% endfor %}
+</div>
+
+
+<!-- ================= JS ================= -->
+<script>
+document.querySelectorAll(".toggle-edit").forEach(btn => {
+  const card = btn.closest(".medicine-card");
+  const form = card.querySelector(".medicine-form");
+  const saveBtn = form.querySelector(".save-btn");
+  const addBtn = form.querySelector(".add-dosage-btn");
+
+  btn.addEventListener("click", () => {
+    const enable = form.style.pointerEvents === "none";
+
+    form.style.pointerEvents = enable ? "auto" : "none";
+    form.style.opacity = enable ? "1" : "0.75";
+
+    form.querySelectorAll("input, select").forEach(el => {
+      if (el.name !== "compartment") {
+        el.readOnly = !enable;
+        el.disabled = !enable;
+      }
+    });
+
+    saveBtn.style.display = enable ? "inline-block" : "none";
+    addBtn.style.display = enable ? "inline-block" : "none";
+
+    btn.textContent = enable
+      ? "❌ Cancel"
+      : (card.querySelector("input[name='name']").value ? "✏️ Edit" : "➕ Add");
+  });
+});
+
+// Add dosage row
+document.querySelectorAll(".add-dosage-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const container = btn.closest("form").querySelector(".dosage-container");
+    const template = container.firstElementChild.cloneNode(true);
+
+    // Clear data
+    template.querySelectorAll("input").forEach(el => el.value = "");
+    template.querySelectorAll("select").forEach(el => el.selectedIndex = 0);
+
+    container.appendChild(template);
+  });
+});
+</script>
+
+<style>
+.medicine-card { border-radius: 15px; transition: 0.3s; }
+.medicine-card:hover { transform: translateY(-3px); }
+</style>
+
+{% endblock %}

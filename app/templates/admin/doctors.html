@@ -1,0 +1,41 @@
+<!-- app/templates/admin/doctors.html -->
+{% extends "shared/base.html" %}
+{% block content %}
+
+<h2 class="fw-bold mb-4 text-center">🩺 All Doctors</h2>
+
+{% if doctors %}
+<table class="table table-hover shadow-sm bg-white rounded">
+  <thead class="table-info">
+    <tr>
+      <th>#</th>
+      <th>Name</th>
+      <th>Username</th>
+      <th>Email</th>
+      <th>Linked Patients</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for d in doctors %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ d.name }}</td>
+        <td>{{ d.username }}</td>
+        <td>{{ d.email or '-' }}</td>
+        <td>
+          {% set linked = d.id %}
+          <span class="badge bg-success">Linked patients feature (coming)</span>
+        </td>
+        <td>
+          <a href="{{ url_for('admin.delete_user', user_id=d.id) }}" class="btn btn-sm btn-danger">Remove</a>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="alert alert-info text-center">No doctors found.</div>
+{% endif %}
+
+{% endblock %}

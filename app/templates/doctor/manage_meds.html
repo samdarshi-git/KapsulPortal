@@ -1,0 +1,106 @@
+<!-- app/templates/doctor/manage_meds.html -->
+{% extends "shared/base.html" %}
+{% block content %}
+
+<h2 class="fw-bold text-center mb-4 text-primary">💊 Manage Medicines for {{ patient.name }}</h2>
+
+<div class="text-center mb-4">
+  <a href="{{ url_for('doctor.view_patient', patient_id=patient.id) }}" class="btn btn-outline-secondary">⬅ Back to Patient</a>
+</div>
+
+<div class="card shadow-sm p-4 mb-4">
+  <h5 class="fw-bold text-success mb-3">📦 Current Compartments</h5>
+
+  <div class="row row-cols-1 row-cols-md-4 g-3">
+    {% for i in range(1,9) %}
+      {% set m = meds[i] %}
+      <div class="col">
+        <div class="card h-100 border rounded shadow-sm {% if m %}border-success{% else %}border-secondary{% endif %}">
+          <div class="card-body">
+            <h6 class="fw-bold text-primary mb-2">Compartment {{ i }}</h6>
+            {% if m %}
+              <p><strong>Name:</strong> {{ m.name }}</p>
+              <p><strong>Qty:</strong> {{ m.quantity }}</p>
+              <p><strong>Expiry:</strong> {{ m.expiry.strftime('%b %Y') }}</p>
+              <button class="btn btn-sm btn-outline-primary w-100" data-bs-toggle="modal" data-bs-target="#editModal{{ i }}">✏️ Edit</button>
+            {% else %}
+              <button class="btn btn-sm btn-outline-success w-100" data-bs-toggle="modal" data-bs-target="#editModal{{ i }}">➕ Add</button>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal -->
+      <div class="modal fade" id="editModal{{ i }}" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+          <div class="modal-content">
+            <form method="POST">
+              <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">💊 {% if m %}Edit{% else %}Add{% endif %} Medicine (Compartment {{ i }})</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                <input type="hidden" name="compartment" value="{{ i }}">
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label class="form-label">Medicine Name</label>
+                    <input type="text" class="form-control" name="name" value="{{ m.name if m else '' }}" required>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Composition</label>
+                    <input type="text" class="form-control" name="composition" value="{{ m.composition if m else '' }}">
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label">Importance</label>
+                    <select class="form-select" name="importance_level">
+                      {% for level in ['High','Medium','Low'] %}
+                        <option value="{{ level }}" {% if m and m.importance_level == level %}selected{% endif %}>{{ level }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label">Quantity</label>
+                    <input type="number" class="form-control" name="quantity" min="1" value="{{ m.quantity if m else 10 }}" required>
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label">Expiry (MM/YYYY)</label>
+                    <div class="input-group">
+                      <input type="number" class="form-control" name="expiry_month" min="1" max="12" value="{{ m.expiry.month if m else '' }}" required>
+                      <input type="number" class="form-control" name="expiry_year" min="2024" max="2100" value="{{ m.expiry.year if m else '' }}" required>
+                    </div>
+                  </div>
+                </div>
+
+                <hr>
+                <h6 class="fw-bold text-secondary">Dosages</h6>
+                <div class="dosage-group">
+                  <div class="row g-2 align-items-center mb-2">
+                    <div class="col-md-2"><input type="number" class="form-control" name="time_start[]" placeholder="Hour (1-12)"></div>
+                    <div class="col-md-2">
+                      <select name="ampm[]" class="form-select">
+                        <option>AM</option><option>PM</option>
+                      </select>
+                    </div>
+                    <div class="col-md-3">
+                      <select name="food_status[]" class="form-select">
+                        <option>Before Food</option><option>After Food</option><option>Doesn’t Matter</option>
+                      </select>
+                    </div>
+                    <div class="col-md-5"><input type="text" name="remark[]" class="form-control" placeholder="Remark"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">💾 Save</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock %}
